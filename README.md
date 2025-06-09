@@ -27,14 +27,14 @@ Aplikasi web sederhana untuk mencatat pemasukan dan pengeluaran harian dengan fi
 
 ## 🚀 Demo Live
 
-Akses aplikasi di: `https://[username].github.io/[repository-name]/`
+Akses aplikasi di: `https://Lukman754.github.io/note/`
 
 ## 🛠️ Cara Deploy di GitHub Pages
 
 ### 1. Fork/Clone Repository
 ```bash
-git clone https://github.com/[username]/[repository-name].git
-cd [repository-name]
+git clone https://github.com/Lukman754/note.git
+cd note
 ```
 
 ### 2. Rename File
@@ -48,7 +48,7 @@ Rename `note.html` menjadi `index.html` untuk GitHub Pages
 5. Klik **Save**
 
 ### 4. Akses Aplikasi
-Aplikasi akan tersedia di: `https://[username].github.io/[repository-name]/`
+Aplikasi akan tersedia di: `https://Lukman754.github.io/note/`
 
 ## 💡 Cara Menggunakan
 
@@ -140,7 +140,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 📞 Kontak
 
-Project Link: [https://github.com/[username]/[repository-name]](https://github.com/[username]/[repository-name])
+Project Link: [https://github.com/Lukman754/note](https://github.com/Lukman754/note)
 
 ---
 
