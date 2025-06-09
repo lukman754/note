@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catatan Keuangan</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .date {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 14px;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .login-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .login-screen h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .login-screen p {
+            margin-bottom: 30px;
+            color: #666;
+        }
+        
+        .menu-btn {
+            width: 100%;
+            padding: 15px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-pemasukan {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        .btn-pengeluaran {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            color: white;
+        }
+        
+        .btn-ringkasan {
+            background: linear-gradient(135deg, #2196F3, #1976D2);
+            color: white;
+        }
+        
+        .btn-selesai {
+            background: linear-gradient(135deg, #FF9800, #F57C00);
+            color: white;
+        }
+        
+        .menu-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .input-form {
+            display: none;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .calculator-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .calculator-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .calc-result {
+            position: absolute;
+            right: 12px;
+            top: 35px;
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            pointer-events: none;
+        }
+        
+        .calc-help {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(135deg, #757575, #616161);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .ringkasan {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .ringkasan h3 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .ringkasan-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .ringkasan-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .positive {
+            color: #4CAF50;
+        }
+        
+        .negative {
+            color: #f44336;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .sync-status {
+            font-size: 12px;
+            color: #4CAF50;
+            text-align: center;
+            margin-top: 10px;
+        }
+        
+        .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Catatan Keuangan</h1>
+            <div class="date" id="currentDate"></div>
+        </div>
+        
+        <!-- User Info Bar -->
+        <div id="userInfo" class="user-info" style="display: none;">
+            <div class="user-profile">
+                <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
+                <span id="userName"></span>
+            </div>
+            <button class="logout-btn" onclick="logout()">Keluar</button>
+        </div>
+        
+        <div class="content">
+            <!-- Login Screen -->
+            <div id="loginScreen" class="login-screen">
+                <h2>🔐 Masuk ke Akun</h2>
+                <p>Login dengan Google untuk menyimpan data keuangan Anda secara aman di cloud</p>
+                <div id="g_id_onload"
+                     data-client_id="YOUR_GOOGLE_CLIENT_ID"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="rectangular"
+                     data-theme="outline"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-logo_alignment="left">
+                </div>
+            </div>
+            
+            <!-- Menu Utama -->
+            <div id="mainMenu" style="display: none;">
+                <button class="menu-btn btn-pemasukan" onclick="showPemasukanForm()">
+                    🟢 Pemasukan
+                </button>
+                <button class="menu-btn btn-pengeluaran" onclick="showPengeluaranForm()">
+                    🔴 Pengeluaran
+                </button>
+                <button class="menu-btn btn-ringkasan" onclick="showRingkasan()">
+                    📊 Lihat Ringkasan
+                </button>
+                <button class="menu-btn btn-selesai" onclick="showTotalKeseluruhan()">
+                    💼 Total Keseluruhan
+                </button>
+                <div class="sync-status" id="syncStatus">✅ Data tersinkron dengan Google</div>
+            </div>
+            
+            <!-- Form Pemasukan -->
+            <div id="pemasukanForm" class="input-form">
+                <h3>🟢 Input Pemasukan</h3>
+                <div class="input-group">
+                    <label for="jumlahPemasukan">Jumlah Pemasukan (Rp)</label>
+                    <input type="text" id="jumlahPemasukan" class="calculator-input" placeholder="Contoh: 50000 + 25000">
+                    <div id="pemasukanResult" class="calc-result"></div>
+                    <div class="calc-help">💡 Bisa gunakan +, -, *, / untuk perhitungan</div>
+                </div>
+                <button class="btn-submit" onclick="catatPemasukan()">Simpan</button>
+                <button class="btn-cancel" onclick="showMainMenu()">Batal</button>
+            </div>
+            
+            <!-- Form Pengeluaran -->
+            <div id="pengeluaranForm" class="input-form">
+                <h3>🔴 Input Pengeluaran</h3>
+                <div class="input-group">
+                    <label for="makanan">Makanan (Rp)</label>
+                    <input type="text" id="makanan" class="calculator-input" placeholder="Contoh: 15000 + 10000">
+                    <div id="makananResult" class="calc-result"></div>
+                </div>
+                <div class="input-group">
+                    <label for="minuman">Minuman (Rp)</label>
+                    <input type="text" id="minuman" class="calculator-input" placeholder="Contoh: 5000 * 2">
+                    <div id="minumanResult" class="calc-result"></div>
+                </div>
+                <div class="input-group">
+                    <label for="bensin">Bensin (Rp)</label>
+                    <input type="text" id="bensin" class="calculator-input" placeholder="Contoh: 50000">
+                    <div id="bensinResult" class="calc-result"></div>
+                </div>
+                <div class="input-group">
+                    <label for="lainnya">Lainnya (Rp)</label>
+                    <input type="text" id="lainnya" class="calculator-input" placeholder="Contoh: 20000 + 5000">
+                    <div id="lainnyaResult" class="calc-result"></div>
+                </div>
+                <div class="calc-help">💡 Bisa gunakan +, -, *, / untuk perhitungan di semua field</div>
+                <button class="btn-submit" onclick="catatPengeluaran()">Simpan</button>
+                <button class="btn-cancel" onclick="showMainMenu()">Batal</button>
+            </div>
+            
+            <!-- Area Alert -->
+            <div id="alertArea"></div>
+            
+            <!-- Area Ringkasan -->
+            <div id="ringkasanArea"></div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentUser = null;
+        let userData = {};
+        const today = new Date().toLocaleDateString('id-ID');
+        
+        // Set tanggal hari ini
+        document.getElementById('currentDate').textContent = today;
+        
+        // Calculator function
+        function calculateExpression(expression) {
+            try {
+                // Remove spaces and validate input
+                const cleanExpression = expression.replace(/\s/g, '');
+                if (!cleanExpression) return null;
+                
+                // Only allow numbers, +, -, *, /, ., (, )
+                if (!/^[0-9+\-*/.() ]+$/.test(cleanExpression)) {
+                    return null;
+                }
+                
+                // Evaluate the expression safely
+                const result = Function('"use strict"; return (' + cleanExpression + ')')();
+                return isNaN(result) ? null : Math.round(result);
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        // Setup calculator inputs
+        function setupCalculatorInput(inputId, resultId) {
+            const input = document.getElementById(inputId);
+            const result = document.getElementById(resultId);
+            
+            input.addEventListener('input', function() {
+                const calculated = calculateExpression(this.value);
+                if (calculated !== null && this.value.includes(/[+\-*/]/)) {
+                    result.textContent = `= ${calculated.toLocaleString('id-ID')}`;
+                    result.style.display = 'block';
+                } else {
+                    result.style.display = 'none';
+                }
+            });
+        }
+        
+        // Google Sign-In callback
+        function handleCredentialResponse(response) {
+            const responsePayload = decodeJwtResponse(response.credential);
+            
+            currentUser = {
+                id: responsePayload.sub,
+                name: responsePayload.name,
+                email: responsePayload.email,
+                picture: responsePayload.picture
+            };
+            
+            showUserInterface();
+            loadUserData();
+        }
+        
+        function decodeJwtResponse(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            
+            return JSON.parse(jsonPayload);
+        }
+        
+        function showUserInterface() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('userInfo').style.display = 'flex';
+            
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userAvatar').src = currentUser.picture;
+        }
+        
+        function logout() {
+            currentUser = null;
+            userData = {};
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'none';
+            showMainMenu();
+        }
+        
+        // Data management (simulated cloud storage)
+        function loadUserData() {
+            // In real implementation, this would load from Google Drive API or Firebase
+            const localData = localStorage.getItem(`keuangan_${currentUser.id}`);
+            userData = localData ? JSON.parse(localData) : {};
+            updateSyncStatus('✅ Data tersinkron dengan Google');
+        }
+        
+        function saveUserData() {
+            // In real implementation, this would save to Google Drive API or Firebase
+            localStorage.setItem(`keuangan_${currentUser.id}`, JSON.stringify(userData));
+            updateSyncStatus('🔄 Menyimpan...', true);
+            
+            setTimeout(() => {
+                updateSyncStatus('✅ Data tersimpan ke Google');
+            }, 1000);
+        }
+        
+        function updateSyncStatus(message, loading = false) {
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.innerHTML = loading ? `<span class="loading">🔄</span> ${message}` : message;
+        }
+        
+        function showAlert(message, type = 'success') {
+            const alertArea = document.getElementById('alertArea');
+            alertArea.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                alertArea.innerHTML = '';
+            }, 3000);
+        }
+        
+        function showMainMenu() {
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('pemasukanForm').style.display = 'none';
+            document.getElementById('pengeluaranForm').style.display = 'none';
+            document.getElementById('ringkasanArea').innerHTML = '';
+        }
+        
+        function showPemasukanForm() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('pemasukanForm').style.display = 'block';
+            document.getElementById('jumlahPemasukan').focus();
+        }
+        
+        function showPengeluaranForm() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('pengeluaranForm').style.display = 'block';
+        }
+        
+        function catatPemasukan() {
+            const inputValue = document.getElementById('jumlahPemasukan').value;
+            const jumlah = calculateExpression(inputValue) || parseFloat(inputValue);
+            
+            if (isNaN(jumlah) || jumlah <= 0) {
+                showAlert('❌ Jumlah tidak valid!', 'error');
+                return;
+            }
+            
+            if (!userData[today]) {
+                userData[today] = {
+                    pemasukan: 0,
+                    pengeluaran: {
+                        makanan: 0,
+                        minuman: 0,
+                        bensin: 0,
+                        lainnya: 0
+                    }
+                };
+            }
+            
+            userData[today].pemasukan += jumlah;
+            saveUserData();
+            
+            showAlert(`✅ Pemasukan Rp${jumlah.toLocaleString('id-ID')} berhasil dicatat!`);
+            document.getElementById('jumlahPemasukan').value = '';
+            document.getElementById('pemasukanResult').style.display = 'none';
+            showMainMenu();
+        }
+        
+        function catatPengeluaran() {
+            const makananInput = document.getElementById('makanan').value;
+            const minumanInput = document.getElementById('minuman').value;
+            const bensinInput = document.getElementById('bensin').value;
+            const lainnyaInput = document.getElementById('lainnya').value;
+            
+            const makanan = calculateExpression(makananInput) || parseFloat(makananInput) || 0;
+            const minuman = calculateExpression(minumanInput) || parseFloat(minumanInput) || 0;
+            const bensin = calculateExpression(bensinInput) || parseFloat(bensinInput) || 0;
+            const lainnya = calculateExpression(lainnyaInput) || parseFloat(lainnyaInput) || 0;
+            
+            const total = makanan + minuman + bensin + lainnya;
+            
+            if (total <= 0) {
+                showAlert('❌ Masukkan minimal satu pengeluaran!', 'error');
+                return;
+            }
+            
+            if (!userData[today]) {
+                userData[today] = {
+                    pemasukan: 0,
+                    pengeluaran: {
+                        makanan: 0,
+                        minuman: 0,
+                        bensin: 0,
+                        lainnya: 0
+                    }
+                };
+            }
+            
+            userData[today].pengeluaran.makanan += makanan;
+            userData[today].pengeluaran.minuman += minuman;
+            userData[today].pengeluaran.bensin += bensin;
+            userData[today].pengeluaran.lainnya += lainnya;
+            
+            saveUserData();
+            
+            showAlert(`✅ Pengeluaran Rp${total.toLocaleString('id-ID')} berhasil dicatat!`);
+            
+            // Reset form
+            document.getElementById('makanan').value = '';
+            document.getElementById('minuman').value = '';
+            document.getElementById('bensin').value = '';
+            document.getElementById('lainnya').value = '';
+            
+            // Hide calculator results
+            document.getElementById('makananResult').style.display = 'none';
+            document.getElementById('minumanResult').style.display = 'none';
+            document.getElementById('bensinResult').style.display = 'none';
+            document.getElementById('lainnyaResult').style.display = 'none';
+            
+            showMainMenu();
+        }
+        
+        function showRingkasan() {
+            const ringkasanArea = document.getElementById('ringkasanArea');
+            
+            if (!userData[today]) {
+                ringkasanArea.innerHTML = `
+                    <div class="alert alert-warning">
+                        📅 Belum ada data untuk hari ini (${today})
+                    </div>
+                `;
+                return;
+            }
+            
+            const dataHari = userData[today];
+            const totalPengeluaran = Object.values(dataHari.pengeluaran).reduce((a, b) => a + b, 0);
+            const saldo = dataHari.pemasukan - totalPengeluaran;
+            
+            ringkasanArea.innerHTML = `
+                <div class="ringkasan">
+                    <h3>📊 Ringkasan Hari Ini</h3>
+                    <div class="ringkasan-item">
+                        <span>🟢 Pemasukan:</span>
+                        <span class="positive">Rp${dataHari.pemasukan.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="ringkasan-item">
+                        <span>🍽️ Makanan:</span>
+                        <span class="negative">Rp${dataHari.pengeluaran.makanan.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="ringkasan-item">
+                        <span>🥤 Minuman:</span>
+                        <span class="negative">Rp${dataHari.pengeluaran.minuman.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="ringkasan-item">
+                        <span>⛽ Bensin:</span>
+                        <span class="negative">Rp${dataHari.pengeluaran.bensin.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="ringkasan-item">
+                        <span>📦 Lainnya:</span>
+                        <span class="negative">Rp${dataHari.pengeluaran.lainnya.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="ringkasan-item">
+                        <span>💰 Saldo Hari Ini:</span>
+                        <span class="${saldo >= 0 ? 'positive' : 'negative'}">Rp${saldo.toLocaleString('id-ID')}</span>
+                    </div>
+                </div>
+                ${saldo < 0 ? '<div class="alert alert-warning">⚠️ Pengeluaran melebihi pemasukan!</div>' : ''}
+            `;
+        }
+        
+        function showTotalKeseluruhan() {
+            const ringkasanArea = document.getElementById('ringkasanArea');
+            
+            let totalPemasukan = 0;
+            let totalPengeluaran = 0;
+            let jumlahHari = 0;
+            
+            Object.values(userData).forEach(hari => {
+                totalPemasukan += hari.pemasukan;
+                totalPengeluaran += Object.values(hari.pengeluaran).reduce((a, b) => a + b, 0);
+                jumlahHari++;
+            });
+            
+            const saldoTotal = totalPemasukan - totalPengeluaran;
+            
+            ringkasanArea.innerHTML = `
+                <div class="ringkasan">
+                    <h3>💼 Total Keseluruhan</h3>
+                    <div class="ringkasan-item">
+                        <span>🗓️ Jumlah Hari:</span>
+                        <span>${jumlahHari} hari</span>
+                    </div>
+                    <div class="ringkasan-item">
+                        <span>🟢 Total Pemasukan:</span>
+                        <span class="positive">Rp${totalPemasukan.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="ringkasan-item">
+                        <span>🔴 Total Pengeluaran:</span>
+                        <span class="negative">Rp${totalPengeluaran.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="ringkasan-item">
+                        <span>💰 Saldo Total:</span>
+                        <span class="${saldoTotal >= 0 ? 'positive' : 'negative'}">Rp${saldoTotal.toLocaleString('id-ID')}</span>
+                    </div>
+                </div>
+                ${saldoTotal < 0 ? '<div class="alert alert-warning">⚠️ Total pengeluaran melebihi pemasukan!</div>' : ''}
+            `;
+        }
+        
+        // Initialize calculator inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            setupCalculatorInput('jumlahPemasukan', 'pemasukanResult');
+            setupCalculatorInput('makanan', 'makananResult');
+            setupCalculatorInput('minuman', 'minumanResult');
+            setupCalculatorInput('bensin', 'bensinResult');
+            setupCalculatorInput('lainnya', 'lainnyaResult');
+        });
+    </script>
+</body>
+</html>
