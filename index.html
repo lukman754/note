@@ -3,7 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Catatan Keuangan Plus</title>
+    <title>Flow</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
     <style>
       :root[data-theme="light"] {
         --bg-primary: #ffffff;
@@ -101,24 +105,54 @@
 
       .menu-btn {
         width: 100%;
-        padding: 12px 16px;
+        padding: 12px;
         margin: 8px 0;
         border: 1px solid var(--border-color);
         border-radius: 8px;
-        font-size: 14px;
-        font-weight: 500;
+        font-size: 20px;
         cursor: pointer;
         background: var(--bg-primary);
         color: var(--text-primary);
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
+        position: relative;
       }
 
       .menu-btn:hover {
         background: var(--bg-secondary);
         border-color: var(--accent-color);
+      }
+
+      .menu-btn::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        border: 1px solid var(--border-color);
+        z-index: 1;
+      }
+
+      .menu-btn:hover::after {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        margin-bottom: 16px;
       }
 
       .input-form {
@@ -186,16 +220,27 @@
       }
 
       .calc-result {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: var(--success-color);
-        color: white;
-        padding: 4px 8px;
-        border-radius: 4px;
+        margin-top: 4px;
         font-size: 12px;
         font-weight: 500;
+        padding: 4px 8px;
+        border-radius: 4px;
+        display: inline-block;
+        background: var(--bg-secondary);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+      }
+
+      .calc-result.success {
+        background: rgba(0, 112, 243, 0.1);
+        color: var(--success-color);
+        border-color: var(--success-color);
+      }
+
+      .calc-result.error {
+        background: rgba(255, 0, 0, 0.1);
+        color: var(--error-color);
+        border-color: var(--error-color);
       }
 
       .calc-helper {
@@ -329,12 +374,223 @@
           font-size: 13px;
         }
       }
+
+      .export-section {
+        background: var(--bg-primary);
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 16px;
+        border: 1px solid var(--border-color);
+      }
+
+      .export-section h3 {
+        color: var(--text-primary);
+        margin-bottom: 16px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .export-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      .export-btn {
+        padding: 10px 16px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .export-btn:hover {
+        background: var(--bg-secondary);
+        border-color: var(--accent-color);
+      }
+
+      .stats-section {
+        background: var(--bg-primary);
+        border-radius: 8px;
+        padding: 20px;
+        margin: 16px 0;
+        border: 1px solid var(--border-color);
+      }
+
+      .stats-section h3 {
+        color: var(--text-primary);
+        margin-bottom: 16px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .stats-item {
+        background: var(--bg-secondary);
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+      }
+
+      .stats-item .label {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+      }
+
+      .stats-item .value {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .stats-item .value.positive {
+        color: var(--success-color);
+      }
+
+      .stats-item .value.negative {
+        color: var(--error-color);
+      }
+
+      .chart-container {
+        margin-top: 20px;
+        height: 200px;
+        position: relative;
+        padding: 0 10px;
+      }
+
+      .chart-grid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 20px;
+      }
+
+      .chart-grid-line {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--border-color);
+        opacity: 0.7;
+      }
+
+      .chart-svg {
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+        width: 100%;
+        height: 150px;
+        overflow: visible;
+      }
+
+      .chart-point {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s, background-color 0.2s;
+        z-index: 2;
+      }
+
+      .chart-point:hover {
+        transform: translate(-50%, -50%) scale(1.5);
+      }
+
+      .chart-point.income {
+        background: var(--success-color);
+        border: 2px solid var(--bg-primary);
+      }
+
+      .chart-point.expense {
+        background: var(--error-color);
+        border: 2px solid var(--bg-primary);
+      }
+
+      .chart-path {
+        fill: none;
+      }
+
+      .chart-path.income {
+        stroke: var(--success-color);
+        stroke-width: 2;
+      }
+
+      .chart-path.expense {
+        stroke: var(--error-color);
+        stroke-width: 2;
+      }
+
+      .chart-labels {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 8px;
+        padding: 0 4px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 20px;
+      }
+
+      .chart-label {
+        font-size: 11px;
+        color: var(--text-secondary);
+        text-align: center;
+        flex: 1;
+        transform: none;
+        transform-origin: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .chart-label:hover {
+        color: var(--text-primary);
+      }
+
+      .chart-lines {
+        height: 180px;
+        gap: 12px;
+        padding: 0 4px;
+        border-bottom: 1px solid var(--border-color);
+        position: relative;
+      }
+
+      .watermark {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        opacity: 0.7;
+      }
+
+      .watermark i {
+        color: var(--error-color); /* Warna merah untuk hati */
+        margin: 0 4px;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="header">
-        <h1>💰 Catatan Keuangan Plus</h1>
+        <h1>💰 Flow</h1>
         <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
           🌙
         </button>
@@ -343,26 +599,41 @@
       <div class="content">
         <!-- Menu Utama -->
         <div id="mainMenu">
-          <button class="menu-btn" onclick="showPemasukanForm()">
-            🟢 Pemasukan
-          </button>
-          <button class="menu-btn" onclick="showPengeluaranForm()">
-            🔴 Pengeluaran
-          </button>
-          <button class="menu-btn" onclick="showRingkasan()">
-            📊 Lihat Ringkasan
-          </button>
-          <button class="menu-btn" onclick="showTotalKeseluruhan()">
-            💼 Total Keseluruhan
-          </button>
-          <button class="menu-btn" onclick="showExportOptions()">
-            📤 Export Data
-          </button>
+          <div class="menu-grid">
+            <button
+              class="menu-btn"
+              onclick="showPemasukanForm()"
+              data-tooltip="Pemasukan"
+            >
+              <i class="fas fa-plus-circle"></i>
+            </button>
+            <button
+              class="menu-btn"
+              onclick="showPengeluaranForm()"
+              data-tooltip="Pengeluaran"
+            >
+              <i class="fas fa-minus-circle"></i>
+            </button>
+            <button
+              class="menu-btn"
+              onclick="showRingkasan()"
+              data-tooltip="Ringkasan"
+            >
+              <i class="fas fa-receipt"></i>
+            </button>
+            <button
+              class="menu-btn"
+              onclick="showExportOptions()"
+              data-tooltip="Export Data"
+            >
+              <i class="fas fa-file-export"></i>
+            </button>
+          </div>
         </div>
 
         <!-- Form Pemasukan -->
         <div id="pemasukanForm" class="input-form">
-          <h3>🟢 Input Pemasukan</h3>
+          <h3><i class="fas fa-sack-dollar"></i> Input Pemasukan</h3>
           <div class="input-group">
             <label for="jumlahPemasukan">Jumlah Pemasukan (Rp)</label>
             <div class="calc-input-container">
@@ -387,8 +658,8 @@
                   ×
                 </button>
               </div>
-              <div class="calc-result" id="jumlahPemasukanResult"></div>
             </div>
+            <div class="calc-result" id="jumlahPemasukanResult"></div>
             <div class="calc-helper">
               💡 Gunakan tombol + dan × untuk perhitungan
             </div>
@@ -399,7 +670,7 @@
 
         <!-- Form Pengeluaran -->
         <div id="pengeluaranForm" class="input-form">
-          <h3>🔴 Input Pengeluaran</h3>
+          <h3><i class="fas fa-shopping-cart"></i> Input Pengeluaran</h3>
           <div class="input-group">
             <label for="makanan">Makanan (Rp)</label>
             <div class="calc-input-container">
@@ -424,8 +695,8 @@
                   ×
                 </button>
               </div>
-              <div class="calc-result" id="makananResult"></div>
             </div>
+            <div class="calc-result" id="makananResult"></div>
           </div>
           <div class="input-group">
             <label for="minuman">Minuman (Rp)</label>
@@ -451,8 +722,8 @@
                   ×
                 </button>
               </div>
-              <div class="calc-result" id="minumanResult"></div>
             </div>
+            <div class="calc-result" id="minumanResult"></div>
           </div>
           <div class="input-group">
             <label for="bensin">Bensin (Rp)</label>
@@ -472,8 +743,8 @@
                   ×
                 </button>
               </div>
-              <div class="calc-result" id="bensinResult"></div>
             </div>
+            <div class="calc-result" id="bensinResult"></div>
           </div>
           <div class="input-group">
             <label for="lainnya">Lainnya (Rp)</label>
@@ -499,12 +770,13 @@
                   ×
                 </button>
               </div>
-              <div class="calc-result" id="lainnyaResult"></div>
+            </div>
+            <div class="calc-result" id="lainnyaResult"></div>
+            <div class="calc-helper">
+              💡 Gunakan tombol + dan × untuk perhitungan
             </div>
           </div>
-          <div class="calc-helper">
-            💡 Gunakan tombol + dan × untuk perhitungan
-          </div>
+
           <button class="btn-submit" onclick="catatPengeluaran()">
             Simpan
           </button>
@@ -516,7 +788,68 @@
 
         <!-- Area Ringkasan -->
         <div id="ringkasanArea"></div>
+
+        <!-- Total Summary (Moved to be always visible) -->
+        <div class="stats-section" id="totalSummarySection">
+          <h3>💼 Total Keseluruhan</h3>
+          <div class="stats-grid">
+            <div class="stats-item">
+              <div class="label">Jumlah Hari</div>
+              <div class="value" id="totalDays">0 hari</div>
+            </div>
+            <div class="stats-item">
+              <div class="label">Total Pemasukan</div>
+              <div class="value positive" id="totalIncome">Rp0</div>
+            </div>
+            <div class="stats-item">
+              <div class="label">Total Pengeluaran</div>
+              <div class="value negative" id="totalExpense">Rp0</div>
+            </div>
+            <div class="stats-item" style="background-color: var(--bg-primary)">
+              <div class="label">Saldo Total</div>
+              <div
+                class="value"
+                style="font-weight: 600; font-size: large"
+                id="totalBalance"
+              >
+                Rp0
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section" id="weeklyStatsSection">
+          <h3>📈 Statistik Minggu Ini</h3>
+          <div class="stats-grid">
+            <div class="stats-item">
+              <div class="label">Total Pemasukan Minggu Ini</div>
+              <div class="value positive" id="weeklyIncome">Rp0</div>
+            </div>
+            <div class="stats-item">
+              <div class="label">Total Pengeluaran Minggu Ini</div>
+              <div class="value negative" id="weeklyExpense">Rp0</div>
+            </div>
+            <div class="stats-item">
+              <div class="label">Rata-rata Pemasukan</div>
+              <div class="value positive" id="avgIncome">Rp0</div>
+            </div>
+            <div class="stats-item">
+              <div class="label">Rata-rata Pengeluaran</div>
+              <div class="value negative" id="avgExpense">Rp0</div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <div class="chart-grid"></div>
+            <div class="chart-lines" id="weeklyChart"></div>
+            <div class="chart-labels" id="chartLabels"></div>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <div class="watermark">
+      Made with <i class="fas fa-heart"></i> by Lukman754
     </div>
 
     <script>
@@ -541,6 +874,7 @@
 
         if (!expression) {
           resultElement.textContent = "";
+          resultElement.className = "calc-result";
           return;
         }
 
@@ -549,8 +883,8 @@
           const cleanExpression = expression.replace(/[^0-9+\-*/().\s]/g, "");
 
           if (cleanExpression !== expression) {
-            resultElement.textContent = "❌";
-            resultElement.style.background = "#f44336";
+            resultElement.textContent = "❌ Invalid input";
+            resultElement.className = "calc-result error";
             return;
           }
 
@@ -560,16 +894,17 @@
           )();
 
           if (isNaN(result) || !isFinite(result)) {
-            resultElement.textContent = "❌";
-            resultElement.style.background = "#f44336";
+            resultElement.textContent = "❌ Invalid calculation";
+            resultElement.className = "calc-result error";
           } else {
-            resultElement.textContent =
-              Math.round(result).toLocaleString("id-ID");
-            resultElement.style.background = "#4CAF50";
+            resultElement.textContent = `= Rp${Math.round(
+              result
+            ).toLocaleString("id-ID")}`;
+            resultElement.className = "calc-result success";
           }
         } catch (error) {
-          resultElement.textContent = "❌";
-          resultElement.style.background = "#f44336";
+          resultElement.textContent = "❌ Invalid expression";
+          resultElement.className = "calc-result error";
         }
       }
 
@@ -603,17 +938,24 @@
         document.getElementById("pemasukanForm").style.display = "none";
         document.getElementById("pengeluaranForm").style.display = "none";
         document.getElementById("ringkasanArea").innerHTML = "";
+        document.getElementById("ringkasanArea").style.display = "none";
+        document.getElementById("totalSummarySection").style.display = "block";
+        document.getElementById("weeklyStatsSection").style.display = "block";
       }
 
       function showPemasukanForm() {
-        document.getElementById("mainMenu").style.display = "none";
         document.getElementById("pemasukanForm").style.display = "block";
+        document.getElementById("pengeluaranForm").style.display = "none";
+        document.getElementById("ringkasanArea").innerHTML = "";
+        document.getElementById("ringkasanArea").style.display = "none";
         document.getElementById("jumlahPemasukan").focus();
       }
 
       function showPengeluaranForm() {
-        document.getElementById("mainMenu").style.display = "none";
         document.getElementById("pengeluaranForm").style.display = "block";
+        document.getElementById("pemasukanForm").style.display = "none";
+        document.getElementById("ringkasanArea").innerHTML = "";
+        document.getElementById("ringkasanArea").style.display = "none";
       }
 
       function catatPemasukan() {
@@ -647,6 +989,8 @@
         document.getElementById("jumlahPemasukan").value = "";
         document.getElementById("jumlahPemasukanResult").textContent = "";
         showMainMenu();
+        calculateWeeklyStats();
+        updateTotalSummary();
       }
 
       function catatPengeluaran() {
@@ -694,11 +1038,18 @@
         });
 
         showMainMenu();
+        calculateWeeklyStats();
+        updateTotalSummary();
       }
 
       function showRingkasan() {
         const data = bacaData();
         const ringkasanArea = document.getElementById("ringkasanArea");
+
+        document.getElementById("pemasukanForm").style.display = "none";
+        document.getElementById("pengeluaranForm").style.display = "none";
+
+        ringkasanArea.style.display = "block";
 
         if (!data[today]) {
           ringkasanArea.innerHTML = `
@@ -718,9 +1069,9 @@
 
         ringkasanArea.innerHTML = `
                 <div class="ringkasan">
-                    <h3>📊 Ringkasan Hari Ini</h3>
+                    <h3><i class="fas fa-receipt"></i> Ringkasan Hari Ini</h3>
                     <div class="ringkasan-item">
-                        <span>🟢 Pemasukan:</span>
+                        <span><i class="fas fa-arrow-alt-circle-up"></i> Pemasukan:</span>
                         <span class="positive">Rp${dataHari.pemasukan.toLocaleString(
                           "id-ID"
                         )}</span>
@@ -792,42 +1143,56 @@
                     </div>
                     <div class="ringkasan-item">
                         <span>🟢 Total Pemasukan:</span>
-                        <span class="positive">Rp${totalPemasukan.toLocaleString(
-                          "id-ID"
-                        )}</span>
+                    <span class="positive">Rp${totalPemasukan.toLocaleString(
+                      "id-ID"
+                    )}</span>
                     </div>
                     <div class="ringkasan-item">
                         <span>🔴 Total Pengeluaran:</span>
-                        <span class="negative">Rp${totalPengeluaran.toLocaleString(
-                          "id-ID"
-                        )}</span>
+                    <span class="negative">Rp${totalPengeluaran.toLocaleString(
+                      "id-ID"
+                    )}</span>
                     </div>
                     <div class="ringkasan-item">
                         <span>💰 Saldo Total:</span>
-                        <span class="${
-                          saldoTotal >= 0 ? "positive" : "negative"
-                        }">Rp${saldoTotal.toLocaleString("id-ID")}</span>
+                    <span class="${
+                      saldoTotal >= 0 ? "positive" : "negative"
+                    }">Rp${saldoTotal.toLocaleString("id-ID")}</span>
                     </div>
                 </div>
-                ${
-                  saldoTotal < 0
-                    ? '<div class="alert alert-warning">⚠️ Total pengeluaran melebihi pemasukan!</div>'
-                    : ""
-                }
+            ${
+              saldoTotal < 0
+                ? '<div class="alert alert-warning">⚠️ Total pengeluaran melebihi pemasukan!</div>'
+                : ""
+            }
             `;
       }
 
       function showExportOptions() {
-        const data = bacaData();
         const ringkasanArea = document.getElementById("ringkasanArea");
+
+        document.getElementById("pemasukanForm").style.display = "none";
+        document.getElementById("pengeluaranForm").style.display = "none";
+
+        ringkasanArea.style.display = "block";
 
         ringkasanArea.innerHTML = `
                 <div class="export-section">
-                    <h3>📤 Export Data</h3>
-                    <p>Pilih format export:</p>
-                    <button class="export-btn" onclick="exportToJSON()">📄 Export JSON</button>
-                    <button class="export-btn" onclick="exportToCSV()">📊 Export CSV</button>
-                    <button class="export-btn" onclick="importData()">📥 Import Data</button>
+                    <h3><i class="fas fa-file-export"></i> Export Data</h3>
+                <div class="export-buttons">
+                    <button class="export-btn" onclick="exportToJSON()">
+                        📄 JSON
+                    </button>
+                    <button class="export-btn" onclick="exportToCSV()">
+                        📊 CSV
+                    </button>
+                    <button class="export-btn" onclick="exportToWhatsApp()">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                    <button class="export-btn" onclick="importData()">
+                        📥 Import
+                    </button>
+                </div>
                     <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
                 </div>
             `;
@@ -872,6 +1237,63 @@
         link.click();
 
         showAlert("✅ Data berhasil diexport ke CSV!");
+      }
+
+      function exportToWhatsApp() {
+        const data = bacaData();
+        let message = "Ringkasan Catatan Keuangan Anda:\n\n";
+        let totalPemasukanGlobal = 0;
+        let totalPengeluaranGlobal = 0;
+
+        const sortedDates = Object.keys(data).sort((a, b) => {
+          const [dayA, monthA, yearA] = a.split("/").map(Number);
+          const [dayB, monthB, yearB] = b.split("/").map(Number);
+          return (
+            new Date(yearA, monthA - 1, dayA) -
+            new Date(yearB, monthB - 1, dayB)
+          );
+        });
+
+        sortedDates.forEach((tanggal) => {
+          const hari = data[tanggal];
+          const totalPengeluaranHariIni = Object.values(
+            hari.pengeluaran
+          ).reduce((a, b) => a + b, 0);
+          const saldoHariIni = hari.pemasukan - totalPengeluaranHariIni;
+
+          message += `*Tanggal: ${tanggal}*\n`;
+          message += `Pemasukan: Rp${hari.pemasukan.toLocaleString("id-ID")}\n`;
+          message += `Pengeluaran: Rp${totalPengeluaranHariIni.toLocaleString(
+            "id-ID"
+          )}\n`;
+          message += `Saldo Harian: Rp${saldoHariIni.toLocaleString(
+            "id-ID"
+          )}\n\n`;
+
+          totalPemasukanGlobal += hari.pemasukan;
+          totalPengeluaranGlobal += totalPengeluaranHariIni;
+        });
+
+        const saldoTotalGlobal = totalPemasukanGlobal - totalPengeluaranGlobal;
+
+        message += `--- *Total Keseluruhan* ---\n`;
+        message += `Total Pemasukan: Rp${totalPemasukanGlobal.toLocaleString(
+          "id-ID"
+        )}\n`;
+        message += `Total Pengeluaran: Rp${totalPengeluaranGlobal.toLocaleString(
+          "id-ID"
+        )}\n`;
+        message += `Saldo Total: Rp${saldoTotalGlobal.toLocaleString(
+          "id-ID"
+        )}\n\n`;
+        message += `*Dibuat oleh Flow*`;
+
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+          message
+        )}`;
+        window.open(whatsappUrl, "_blank");
+
+        showAlert("✅ Data berhasil dibuat untuk WhatsApp!");
       }
 
       function importData() {
@@ -923,6 +1345,231 @@
         }
       }
 
+      function getWeekDates() {
+        const today = new Date();
+        const currentDay = today.getDay(); // 0 = Minggu, 1 = Senin, ..., 6 = Sabtu
+        const dates = [];
+
+        // Hitung offset untuk mendapatkan hari Senin
+        const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
+        const monday = new Date(today);
+        monday.setDate(today.getDate() + mondayOffset);
+
+        // Generate tanggal dari Senin sampai Minggu
+        for (let i = 0; i < 7; i++) {
+          const date = new Date(monday);
+          date.setDate(monday.getDate() + i);
+          dates.push({
+            date: date.toLocaleDateString("id-ID"),
+            dayName: [
+              "Minggu",
+              "Senin",
+              "Selasa",
+              "Rabu",
+              "Kamis",
+              "Jumat",
+              "Sabtu",
+            ][date.getDay()],
+          });
+        }
+
+        return dates;
+      }
+
+      function calculateWeeklyStats() {
+        const data = bacaData();
+        const weekDates = getWeekDates();
+        let totalIncome = 0;
+        let totalExpense = 0;
+        let daysWithData = 0;
+
+        const weeklyData = weekDates.map(({ date, dayName }) => {
+          const dayData = data[date] || {
+            pemasukan: 0,
+            pengeluaran: { makanan: 0, minuman: 0, bensin: 0, lainnya: 0 },
+          };
+          const income = dayData.pemasukan;
+          const expense = Object.values(dayData.pengeluaran).reduce(
+            (a, b) => a + b,
+            0
+          );
+
+          if (income > 0 || expense > 0) daysWithData++;
+          totalIncome += income;
+          totalExpense += expense;
+
+          return { date, dayName, income, expense };
+        });
+
+        // Update stats
+        document.getElementById(
+          "weeklyIncome"
+        ).textContent = `Rp${totalIncome.toLocaleString("id-ID")}`;
+        document.getElementById(
+          "weeklyExpense"
+        ).textContent = `Rp${totalExpense.toLocaleString("id-ID")}`;
+        document.getElementById("avgIncome").textContent = `Rp${Math.round(
+          totalIncome / (daysWithData || 1)
+        ).toLocaleString("id-ID")}`;
+        document.getElementById("avgExpense").textContent = `Rp${Math.round(
+          totalExpense / (daysWithData || 1)
+        ).toLocaleString("id-ID")}`;
+
+        // Update chart
+        updateWeeklyChart(weeklyData);
+      }
+
+      function updateWeeklyChart(weeklyData) {
+        const chartContainer =
+          document.getElementById("weeklyChart").parentNode; // Get the .chart-container
+        const chartArea = document.getElementById("weeklyChart"); // This is now the .chart-lines div
+        const labelsContainer = document.getElementById("chartLabels");
+        chartArea.innerHTML = ""; // Clear existing lines/points
+        labelsContainer.innerHTML = "";
+
+        const chartPaddingHorizontal = 4;
+        const chartWidth =
+          chartContainer.offsetWidth - 2 * chartPaddingHorizontal;
+
+        // Clear previous grid lines if any
+        const existingGrid = chartContainer.querySelector(".chart-grid");
+        if (existingGrid) {
+          existingGrid.remove();
+        }
+
+        // Add grid lines
+        const linesContainer = document.createElement("div");
+        linesContainer.className = "chart-grid";
+        for (let i = 0; i <= 4; i++) {
+          const line = document.createElement("div");
+          line.className = "chart-grid-line";
+          line.style.bottom = `${(i / 4) * 100}%`;
+          linesContainer.appendChild(line);
+        }
+        chartContainer.prepend(linesContainer); // Add grid lines as first child of chart-container
+
+        const allValues = weeklyData.flatMap((d) => [d.income, d.expense]);
+        const maxValue = Math.max(...allValues) || 1;
+        const chartHeight = 180; // The actual drawing height for the lines
+        const scale = chartHeight / maxValue;
+        const pointSpacing = chartWidth / weeklyData.length;
+
+        // Create SVG for paths
+        const svg = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "svg"
+        );
+        svg.setAttribute("viewBox", `0 0 ${chartWidth} ${chartHeight}`);
+        svg.style.width = "100%";
+        svg.style.height = `${chartHeight}px`;
+        svg.style.position = "absolute";
+        svg.style.bottom = "0"; // Position SVG at the bottom of chartArea
+        svg.style.left = `${chartPaddingHorizontal}px`;
+        svg.style.overflow = "visible";
+
+        // Create paths for income and expense
+        const incomePath = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "path"
+        );
+        const expensePath = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "path"
+        );
+        incomePath.setAttribute("class", "chart-path income");
+        expensePath.setAttribute("class", "chart-path expense");
+
+        let incomePoints = [];
+        let expensePoints = [];
+
+        weeklyData.forEach(({ date, dayName, income, expense }, index) => {
+          const x = index * pointSpacing + pointSpacing / 2; // Center of the column
+          const yIncomeSVG = chartHeight - income * scale; // Y coordinate relative to SVG top
+          const yExpenseSVG = chartHeight - expense * scale; // Y coordinate relative to SVG top
+
+          // Store points for path generation
+          incomePoints.push([x, yIncomeSVG]);
+          expensePoints.push([x, yExpenseSVG]);
+
+          // Create visible points (circles) for interaction/tooltip
+          // Points are relative to chartArea (id weeklyChart), which is also the parent of SVG
+          const incomePoint = document.createElement("div");
+          incomePoint.className = "chart-point income";
+          incomePoint.style.left = `${x + chartPaddingHorizontal - 4}px`; // Adjust by half point width and container padding
+          incomePoint.style.bottom = `${income * scale - 4}px`; // Adjust by half point height
+          incomePoint.title = `Pemasukan ${dayName}: Rp${income.toLocaleString(
+            "id-ID"
+          )}`;
+          chartArea.appendChild(incomePoint);
+
+          const expensePoint = document.createElement("div");
+          expensePoint.className = "chart-point expense";
+          expensePoint.style.left = `${x + chartPaddingHorizontal - 4}px`; // Adjust by half point width and container padding
+          expensePoint.style.bottom = `${expense * scale - 4}px`; // Adjust by half point height
+          expensePoint.title = `Pengeluaran ${dayName}: Rp${expense.toLocaleString(
+            "id-ID"
+          )}`;
+          chartArea.appendChild(expensePoint);
+
+          // Create label
+          const label = document.createElement("div");
+          label.className = "chart-label";
+          label.textContent = dayName.substring(0, 3);
+          label.title = date;
+          labelsContainer.appendChild(label);
+        });
+
+        // Create path data
+        const createPathData = (points) => {
+          if (points.length < 2) return "";
+          const path = points
+            .map((p, i) => `${i === 0 ? "M" : "L"} ${p[0]},${p[1]}`)
+            .join(" ");
+          return path;
+        };
+
+        incomePath.setAttribute("d", createPathData(incomePoints));
+        expensePath.setAttribute("d", createPathData(expensePoints));
+
+        svg.appendChild(incomePath);
+        svg.appendChild(expensePath);
+        chartArea.appendChild(svg); // Append SVG to chartArea (which is .chart-lines)
+
+        // Append labels last to ensure they are on top of other content in chartContainer
+        chartContainer.appendChild(labelsContainer);
+      }
+
+      function updateTotalSummary() {
+        const data = bacaData();
+        let totalIncome = 0;
+        let totalExpense = 0;
+        let daysCount = 0;
+
+        Object.values(data).forEach((day) => {
+          totalIncome += day.pemasukan;
+          totalExpense += Object.values(day.pengeluaran).reduce(
+            (a, b) => a + b,
+            0
+          );
+          daysCount++;
+        });
+
+        const totalBalance = totalIncome - totalExpense;
+
+        document.getElementById("totalDays").textContent = `${daysCount} hari`;
+        document.getElementById(
+          "totalIncome"
+        ).textContent = `Rp${totalIncome.toLocaleString("id-ID")}`;
+        document.getElementById(
+          "totalExpense"
+        ).textContent = `Rp${totalExpense.toLocaleString("id-ID")}`;
+        document.getElementById(
+          "totalBalance"
+        ).textContent = `Rp${totalBalance.toLocaleString("id-ID")}`;
+        document.getElementById("totalBalance").className =
+          totalBalance >= 0 ? "positive" : "negative";
+      }
+
       // Initialize
       document.addEventListener("DOMContentLoaded", function () {
         const savedTheme = localStorage.getItem("theme") || "light";
@@ -931,6 +1578,8 @@
         themeToggle.textContent = savedTheme === "light" ? "🌙" : "☀️";
 
         showMainMenu();
+        calculateWeeklyStats();
+        updateTotalSummary();
       });
     </script>
   </body>
