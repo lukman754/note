@@ -1511,6 +1511,33 @@
           )}`;
           chartArea.appendChild(expensePoint);
 
+          // Add text labels for income and expense values directly on the chart
+          const incomeText = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text"
+          );
+          incomeText.setAttribute("x", x);
+          incomeText.setAttribute("y", yIncomeSVG - 8); // Position above the point
+          incomeText.setAttribute("text-anchor", "middle");
+          incomeText.setAttribute("fill", "var(--success-color)");
+          incomeText.setAttribute("font-size", "9px");
+          incomeText.setAttribute("font-weight", "bold");
+          incomeText.textContent = `Rp${income.toLocaleString("id-ID")}`;
+          svg.appendChild(incomeText);
+
+          const expenseText = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text"
+          );
+          expenseText.setAttribute("x", x);
+          expenseText.setAttribute("y", yExpenseSVG + 14); // Position below the point
+          expenseText.setAttribute("text-anchor", "middle");
+          expenseText.setAttribute("fill", "var(--error-color)");
+          expenseText.setAttribute("font-size", "9px");
+          expenseText.setAttribute("font-weight", "bold");
+          expenseText.textContent = `Rp${expense.toLocaleString("id-ID")}`;
+          svg.appendChild(expenseText);
+
           // Create label
           const label = document.createElement("div");
           label.className = "chart-label";
