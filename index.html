@@ -596,9 +596,10 @@
       }
 
       function getUsers() {
-        const users = JSON.parse(localStorage.getItem("financeUsers")) || [
-          "default",
-        ];
+        // Gunakan key yang konsisten untuk menyimpan data pengguna
+        const users = JSON.parse(
+          localStorage.getItem("catatanKeuangan_users")
+        ) || ["default"];
         return users;
       }
 
@@ -616,7 +617,8 @@
         }
 
         users.push(newUserName);
-        localStorage.setItem("financeUsers", JSON.stringify(users));
+        // Simpan data pengguna dengan key yang konsisten
+        localStorage.setItem("catatanKeuangan_users", JSON.stringify(users));
 
         currentUser = newUserName;
         initializeUsers();
@@ -627,6 +629,8 @@
       function switchUser() {
         currentUser = document.getElementById("userSelect").value;
         document.getElementById("ringkasanArea").innerHTML = "";
+        // Simpan pengguna aktif di localStorage
+        localStorage.setItem("catatanKeuangan_currentUser", currentUser);
         showAlert(
           `👤 Beralih ke: ${
             currentUser === "default" ? "Pengguna Default" : currentUser
@@ -1042,13 +1046,16 @@
         }
       }
 
-      // Initialize theme
+      // Update initialization to load the last active user
       document.addEventListener("DOMContentLoaded", function () {
         const savedTheme = localStorage.getItem("theme") || "light";
         document.documentElement.setAttribute("data-theme", savedTheme);
         const themeToggle = document.getElementById("themeToggle");
         themeToggle.textContent = savedTheme === "light" ? "🌙" : "☀️";
 
+        // Load the last active user
+        currentUser =
+          localStorage.getItem("catatanKeuangan_currentUser") || "default";
         initializeUsers();
         showMainMenu();
       });
