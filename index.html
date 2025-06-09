@@ -1,676 +1,909 @@
 <!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="id" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Catatan Keuangan Plus</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+      :root[data-theme="light"] {
+        --bg-primary: #ffffff;
+        --bg-secondary: #fafafa;
+        --text-primary: #000000;
+        --text-secondary: #666666;
+        --border-color: #eaeaea;
+        --accent-color: #0070f3;
+        --success-color: #0070f3;
+        --error-color: #ff0000;
+        --warning-color: #f5a623;
+        --gradient-start: #0070f3;
+        --gradient-end: #00a3ff;
+      }
+
+      :root[data-theme="dark"] {
+        --bg-primary: #000000;
+        --bg-secondary: #111111;
+        --text-primary: #ffffff;
+        --text-secondary: #888888;
+        --border-color: #333333;
+        --accent-color: #3291ff;
+        --success-color: #3291ff;
+        --error-color: #ff4d4d;
+        --warning-color: #f7b955;
+        --gradient-start: #3291ff;
+        --gradient-end: #00a3ff;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        min-height: 100vh;
+        padding: 20px;
+        line-height: 1.5;
+      }
+
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: var(--bg-secondary);
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+      }
+
+      .header {
+        background: var(--bg-primary);
+        padding: 24px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .header h1 {
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .theme-toggle {
+        background: none;
+        border: none;
+        color: var(--text-primary);
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 6px;
+        font-size: 20px;
+      }
+
+      .theme-toggle:hover {
+        background: var(--bg-secondary);
+      }
+
+      .date {
+        font-size: 14px;
+        color: var(--text-secondary);
+      }
+
+      .content {
+        padding: 24px;
+      }
+
+      .menu-btn {
+        width: 100%;
+        padding: 12px 16px;
+        margin: 8px 0;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .menu-btn:hover {
+        background: var(--bg-secondary);
+        border-color: var(--accent-color);
+      }
+
+      .input-form {
+        display: none;
+        background: var(--bg-primary);
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 16px;
+        border: 1px solid var(--border-color);
+      }
+
+      .input-group {
+        margin: 16px 0;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: var(--text-primary);
+        font-size: 14px;
+      }
+
+      .calc-input-container {
+        position: relative;
+        display: flex;
+        gap: 8px;
+      }
+
+      .calc-input {
+        flex: 1;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        font-family: "SF Mono", "Roboto Mono", monospace;
+      }
+
+      .calc-input:focus {
+        outline: none;
+        border-color: var(--accent-color);
+      }
+
+      .calc-buttons {
+        display: flex;
+        gap: 4px;
+      }
+
+      .calc-btn {
+        padding: 8px 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .calc-btn:hover {
+        background: var(--bg-secondary);
+        border-color: var(--accent-color);
+      }
+
+      .calc-result {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--success-color);
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      .calc-helper {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-top: 4px;
+      }
+
+      .btn-submit,
+      .btn-cancel {
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: 1px solid var(--border-color);
+        margin-right: 8px;
+      }
+
+      .btn-submit {
+        background: var(--accent-color);
+        color: white;
+        border: none;
+      }
+
+      .btn-cancel {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+      }
+
+      .btn-submit:hover {
+        opacity: 0.9;
+      }
+
+      .btn-cancel:hover {
+        background: var(--bg-secondary);
+      }
+
+      .ringkasan {
+        background: var(--bg-primary);
+        padding: 20px;
+        border-radius: 8px;
+        margin: 16px 0;
+        border: 1px solid var(--border-color);
+      }
+
+      .ringkasan h3 {
+        color: var(--text-primary);
+        margin-bottom: 16px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .ringkasan-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 14px;
+      }
+
+      .ringkasan-item:last-child {
+        border-bottom: none;
+        font-weight: 500;
+        background: var(--bg-secondary);
+        padding: 12px;
+        border-radius: 6px;
+        margin-top: 12px;
+      }
+
+      .positive {
+        color: var(--success-color);
+      }
+
+      .negative {
+        color: var(--error-color);
+      }
+
+      .alert {
+        padding: 12px 16px;
+        margin: 16px 0;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .alert-success {
+        background: rgba(0, 112, 243, 0.1);
+        color: var(--success-color);
+        border: 1px solid var(--success-color);
+      }
+
+      .alert-warning {
+        background: rgba(245, 166, 35, 0.1);
+        color: var(--warning-color);
+        border: 1px solid var(--warning-color);
+      }
+
+      .alert-error {
+        background: rgba(255, 0, 0, 0.1);
+        color: var(--error-color);
+        border: 1px solid var(--error-color);
+      }
+
+      .user-select {
+        margin-bottom: 24px;
+      }
+
+      .user-select select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        margin-top: 8px;
+      }
+
+      .add-user-form {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .add-user-form input {
+        flex: 1;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 14px;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+      }
+
+      .add-user-form button {
+        padding: 12px 16px;
+        background: var(--accent-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      @media (max-width: 480px) {
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 10px;
+          padding: 12px;
         }
-        
+
         .container {
-            max-width: 450px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            overflow: hidden;
+          border-radius: 8px;
         }
-        
-        .header {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        
-        .date {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
+
         .content {
-            padding: 20px;
+          padding: 16px;
         }
-        
+
+        .header {
+          padding: 16px;
+        }
+
         .menu-btn {
-            width: 100%;
-            padding: 15px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
+          padding: 10px 14px;
+          font-size: 13px;
         }
-        
-        .btn-pemasukan {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-        }
-        
-        .btn-pengeluaran {
-            background: linear-gradient(135deg, #f44336, #d32f2f);
-            color: white;
-        }
-        
-        .btn-ringkasan {
-            background: linear-gradient(135deg, #2196F3, #1976D2);
-            color: white;
-        }
-        
-        .btn-selesai {
-            background: linear-gradient(135deg, #FF9800, #F57C00);
-            color: white;
-        }
-        
-        .btn-export {
-            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
-            color: white;
-        }
-        
-        .menu-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .input-form {
-            display: none;
-        }
-        
-        .input-group {
-            margin: 15px 0;
-            position: relative;
-        }
-        
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .calc-input-container {
-            position: relative;
-        }
-        
-        .calc-input {
-            width: 100%;
-            padding: 12px 50px 12px 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .calc-input:focus {
-            outline: none;
-            border-color: #4CAF50;
-        }
-        
-        .calc-result {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: #4CAF50;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-        
-        .calc-helper {
-            font-size: 12px;
-            color: #666;
-            margin-top: 2px;
-        }
-        
-        .btn-submit {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        
-        .btn-cancel {
-            background: linear-gradient(135deg, #757575, #616161);
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        
-        .ringkasan {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-        }
-        
-        .ringkasan h3 {
-            color: #333;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        
-        .ringkasan-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .ringkasan-item:last-child {
-            border-bottom: none;
-            font-weight: bold;
-            background: rgba(76, 175, 80, 0.1);
-            padding: 12px;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        
-        .positive {
-            color: #4CAF50;
-        }
-        
-        .negative {
-            color: #f44336;
-        }
-        
-        .alert {
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-        }
-        
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-        
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .export-section {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .export-btn {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            margin: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .user-select {
-            margin-bottom: 20px;
-        }
-        
-        .user-select select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        
-        .add-user-form {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .add-user-form input {
-            flex: 1;
-            padding: 8px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-        }
-        
-        .add-user-form button {
-            padding: 8px 15px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <h1>💰 Catatan Keuangan Plus</h1>
-            <div class="date" id="currentDate"></div>
+      <div class="header">
+        <h1>💰 Catatan Keuangan Plus</h1>
+        <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle">
+          🌙
+        </button>
+      </div>
+
+      <div class="content">
+        <!-- User Selection -->
+        <div class="user-select">
+          <label for="userSelect">👤 Pilih Pengguna:</label>
+          <select id="userSelect" onchange="switchUser()">
+            <option value="default">Pengguna Default</option>
+          </select>
+          <div class="add-user-form">
+            <input
+              type="text"
+              id="newUserName"
+              placeholder="Nama pengguna baru..."
+            />
+            <button onclick="addNewUser()">Tambah</button>
+          </div>
         </div>
-        
-        <div class="content">
-            <!-- User Selection -->
-            <div class="user-select">
-                <label for="userSelect">👤 Pilih Pengguna:</label>
-                <select id="userSelect" onchange="switchUser()">
-                    <option value="default">Pengguna Default</option>
-                </select>
-                <div class="add-user-form">
-                    <input type="text" id="newUserName" placeholder="Nama pengguna baru...">
-                    <button onclick="addNewUser()">Tambah</button>
-                </div>
-            </div>
-            
-            <!-- Menu Utama -->
-            <div id="mainMenu">
-                <button class="menu-btn btn-pemasukan" onclick="showPemasukanForm()">
-                    🟢 Pemasukan
-                </button>
-                <button class="menu-btn btn-pengeluaran" onclick="showPengeluaranForm()">
-                    🔴 Pengeluaran
-                </button>
-                <button class="menu-btn btn-ringkasan" onclick="showRingkasan()">
-                    📊 Lihat Ringkasan
-                </button>
-                <button class="menu-btn btn-selesai" onclick="showTotalKeseluruhan()">
-                    💼 Total Keseluruhan
-                </button>
-                <button class="menu-btn btn-export" onclick="showExportOptions()">
-                    📤 Export Data
-                </button>
-            </div>
-            
-            <!-- Form Pemasukan -->
-            <div id="pemasukanForm" class="input-form">
-                <h3>🟢 Input Pemasukan</h3>
-                <div class="input-group">
-                    <label for="jumlahPemasukan">Jumlah Pemasukan (Rp)</label>
-                    <div class="calc-input-container">
-                        <input type="text" id="jumlahPemasukan" class="calc-input" placeholder="Contoh: 50000+25000-5000" oninput="calculateExpression(this)">
-                        <div class="calc-result" id="jumlahPemasukanResult"></div>
-                    </div>
-                    <div class="calc-helper">💡 Bisa gunakan +, -, *, / untuk perhitungan</div>
-                </div>
-                <button class="btn-submit" onclick="catatPemasukan()">Simpan</button>
-                <button class="btn-cancel" onclick="showMainMenu()">Batal</button>
-            </div>
-            
-            <!-- Form Pengeluaran -->
-            <div id="pengeluaranForm" class="input-form">
-                <h3>🔴 Input Pengeluaran</h3>
-                <div class="input-group">
-                    <label for="makanan">Makanan (Rp)</label>
-                    <div class="calc-input-container">
-                        <input type="text" id="makanan" class="calc-input" placeholder="Contoh: 15000+10000" oninput="calculateExpression(this)">
-                        <div class="calc-result" id="makananResult"></div>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label for="minuman">Minuman (Rp)</label>
-                    <div class="calc-input-container">
-                        <input type="text" id="minuman" class="calc-input" placeholder="Contoh: 5000*2" oninput="calculateExpression(this)">
-                        <div class="calc-result" id="minumanResult"></div>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label for="bensin">Bensin (Rp)</label>
-                    <div class="calc-input-container">
-                        <input type="text" id="bensin" class="calc-input" placeholder="Contoh: 20000+5000" oninput="calculateExpression(this)">
-                        <div class="calc-result" id="bensinResult"></div>
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label for="lainnya">Lainnya (Rp)</label>
-                    <div class="calc-input-container">
-                        <input type="text" id="lainnya" class="calc-input" placeholder="Contoh: 30000-2000" oninput="calculateExpression(this)">
-                        <div class="calc-result" id="lainnyaResult"></div>
-                    </div>
-                </div>
-                <div class="calc-helper">💡 Semua field mendukung perhitungan matematis</div>
-                <button class="btn-submit" onclick="catatPengeluaran()">Simpan</button>
-                <button class="btn-cancel" onclick="showMainMenu()">Batal</button>
-            </div>
-            
-            <!-- Area Alert -->
-            <div id="alertArea"></div>
-            
-            <!-- Area Ringkasan -->
-            <div id="ringkasanArea"></div>
+
+        <!-- Menu Utama -->
+        <div id="mainMenu">
+          <button class="menu-btn" onclick="showPemasukanForm()">
+            🟢 Pemasukan
+          </button>
+          <button class="menu-btn" onclick="showPengeluaranForm()">
+            🔴 Pengeluaran
+          </button>
+          <button class="menu-btn" onclick="showRingkasan()">
+            📊 Lihat Ringkasan
+          </button>
+          <button class="menu-btn" onclick="showTotalKeseluruhan()">
+            💼 Total Keseluruhan
+          </button>
+          <button class="menu-btn" onclick="showExportOptions()">
+            📤 Export Data
+          </button>
         </div>
+
+        <!-- Form Pemasukan -->
+        <div id="pemasukanForm" class="input-form">
+          <h3>🟢 Input Pemasukan</h3>
+          <div class="input-group">
+            <label for="jumlahPemasukan">Jumlah Pemasukan (Rp)</label>
+            <div class="calc-input-container">
+              <input
+                type="text"
+                id="jumlahPemasukan"
+                class="calc-input"
+                placeholder="Contoh: 50000+25000"
+                oninput="calculateExpression(this)"
+              />
+              <div class="calc-buttons">
+                <button
+                  class="calc-btn"
+                  onclick="appendToInput('jumlahPemasukan', '+')"
+                >
+                  +
+                </button>
+                <button
+                  class="calc-btn"
+                  onclick="appendToInput('jumlahPemasukan', '*')"
+                >
+                  ×
+                </button>
+              </div>
+              <div class="calc-result" id="jumlahPemasukanResult"></div>
+            </div>
+            <div class="calc-helper">
+              💡 Gunakan tombol + dan × untuk perhitungan
+            </div>
+          </div>
+          <button class="btn-submit" onclick="catatPemasukan()">Simpan</button>
+          <button class="btn-cancel" onclick="showMainMenu()">Batal</button>
+        </div>
+
+        <!-- Form Pengeluaran -->
+        <div id="pengeluaranForm" class="input-form">
+          <h3>🔴 Input Pengeluaran</h3>
+          <div class="input-group">
+            <label for="makanan">Makanan (Rp)</label>
+            <div class="calc-input-container">
+              <input
+                type="text"
+                id="makanan"
+                class="calc-input"
+                placeholder="Contoh: 15000+10000"
+                oninput="calculateExpression(this)"
+              />
+              <div class="calc-buttons">
+                <button
+                  class="calc-btn"
+                  onclick="appendToInput('makanan', '+')"
+                >
+                  +
+                </button>
+                <button
+                  class="calc-btn"
+                  onclick="appendToInput('makanan', '*')"
+                >
+                  ×
+                </button>
+              </div>
+              <div class="calc-result" id="makananResult"></div>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="minuman">Minuman (Rp)</label>
+            <div class="calc-input-container">
+              <input
+                type="text"
+                id="minuman"
+                class="calc-input"
+                placeholder="Contoh: 5000*2"
+                oninput="calculateExpression(this)"
+              />
+              <div class="calc-buttons">
+                <button
+                  class="calc-btn"
+                  onclick="appendToInput('minuman', '+')"
+                >
+                  +
+                </button>
+                <button
+                  class="calc-btn"
+                  onclick="appendToInput('minuman', '*')"
+                >
+                  ×
+                </button>
+              </div>
+              <div class="calc-result" id="minumanResult"></div>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="bensin">Bensin (Rp)</label>
+            <div class="calc-input-container">
+              <input
+                type="text"
+                id="bensin"
+                class="calc-input"
+                placeholder="Contoh: 20000+5000"
+                oninput="calculateExpression(this)"
+              />
+              <div class="calc-buttons">
+                <button class="calc-btn" onclick="appendToInput('bensin', '+')">
+                  +
+                </button>
+                <button class="calc-btn" onclick="appendToInput('bensin', '*')">
+                  ×
+                </button>
+              </div>
+              <div class="calc-result" id="bensinResult"></div>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="lainnya">Lainnya (Rp)</label>
+            <div class="calc-input-container">
+              <input
+                type="text"
+                id="lainnya"
+                class="calc-input"
+                placeholder="Contoh: 30000+2000"
+                oninput="calculateExpression(this)"
+              />
+              <div class="calc-buttons">
+                <button
+                  class="calc-btn"
+                  onclick="appendToInput('lainnya', '+')"
+                >
+                  +
+                </button>
+                <button
+                  class="calc-btn"
+                  onclick="appendToInput('lainnya', '*')"
+                >
+                  ×
+                </button>
+              </div>
+              <div class="calc-result" id="lainnyaResult"></div>
+            </div>
+          </div>
+          <div class="calc-helper">
+            💡 Gunakan tombol + dan × untuk perhitungan
+          </div>
+          <button class="btn-submit" onclick="catatPengeluaran()">
+            Simpan
+          </button>
+          <button class="btn-cancel" onclick="showMainMenu()">Batal</button>
+        </div>
+
+        <!-- Area Alert -->
+        <div id="alertArea"></div>
+
+        <!-- Area Ringkasan -->
+        <div id="ringkasanArea"></div>
+      </div>
     </div>
 
     <script>
-        let currentUser = 'default';
-        const today = new Date().toLocaleDateString('id-ID');
-        
-        // Set tanggal hari ini
-        document.getElementById('currentDate').textContent = today;
-        
-        // Initialize users
-        function initializeUsers() {
-            const users = getUsers();
-            const userSelect = document.getElementById('userSelect');
-            userSelect.innerHTML = '';
-            
-            users.forEach(user => {
-                const option = document.createElement('option');
-                option.value = user;
-                option.textContent = user === 'default' ? 'Pengguna Default' : user;
-                userSelect.appendChild(option);
-            });
-            
-            userSelect.value = currentUser;
+      let currentUser = "default";
+      const today = new Date().toLocaleDateString("id-ID");
+
+      // Set tanggal hari ini
+      document.getElementById("currentDate").textContent = today;
+
+      // Initialize users
+      function initializeUsers() {
+        const users = getUsers();
+        const userSelect = document.getElementById("userSelect");
+        userSelect.innerHTML = "";
+
+        users.forEach((user) => {
+          const option = document.createElement("option");
+          option.value = user;
+          option.textContent = user === "default" ? "Pengguna Default" : user;
+          userSelect.appendChild(option);
+        });
+
+        userSelect.value = currentUser;
+      }
+
+      function getUsers() {
+        const users = JSON.parse(localStorage.getItem("financeUsers")) || [
+          "default",
+        ];
+        return users;
+      }
+
+      function addNewUser() {
+        const newUserName = document.getElementById("newUserName").value.trim();
+        if (!newUserName) {
+          showAlert("❌ Nama pengguna tidak boleh kosong!", "error");
+          return;
         }
-        
-        function getUsers() {
-            const users = JSON.parse(localStorage.getItem('financeUsers')) || ['default'];
-            return users;
+
+        const users = getUsers();
+        if (users.includes(newUserName)) {
+          showAlert("❌ Nama pengguna sudah ada!", "error");
+          return;
         }
-        
-        function addNewUser() {
-            const newUserName = document.getElementById('newUserName').value.trim();
-            if (!newUserName) {
-                showAlert('❌ Nama pengguna tidak boleh kosong!', 'error');
-                return;
-            }
-            
-            const users = getUsers();
-            if (users.includes(newUserName)) {
-                showAlert('❌ Nama pengguna sudah ada!', 'error');
-                return;
-            }
-            
-            users.push(newUserName);
-            localStorage.setItem('financeUsers', JSON.stringify(users));
-            
-            currentUser = newUserName;
-            initializeUsers();
-            showAlert(`✅ Pengguna "${newUserName}" berhasil ditambahkan!`);
-            document.getElementById('newUserName').value = '';
+
+        users.push(newUserName);
+        localStorage.setItem("financeUsers", JSON.stringify(users));
+
+        currentUser = newUserName;
+        initializeUsers();
+        showAlert(`✅ Pengguna "${newUserName}" berhasil ditambahkan!`);
+        document.getElementById("newUserName").value = "";
+      }
+
+      function switchUser() {
+        currentUser = document.getElementById("userSelect").value;
+        document.getElementById("ringkasanArea").innerHTML = "";
+        showAlert(
+          `👤 Beralih ke: ${
+            currentUser === "default" ? "Pengguna Default" : currentUser
+          }`,
+          "success"
+        );
+      }
+
+      function getStorageKey() {
+        return `catatanKeuangan_${currentUser}`;
+      }
+
+      function bacaData() {
+        const data = localStorage.getItem(getStorageKey());
+        return data ? JSON.parse(data) : {};
+      }
+
+      function simpanData(data) {
+        localStorage.setItem(getStorageKey(), JSON.stringify(data));
+      }
+
+      function calculateExpression(input) {
+        const expression = input.value.trim();
+        const resultElement = document.getElementById(input.id + "Result");
+
+        if (!expression) {
+          resultElement.textContent = "";
+          return;
         }
-        
-        function switchUser() {
-            currentUser = document.getElementById('userSelect').value;
-            document.getElementById('ringkasanArea').innerHTML = '';
-            showAlert(`👤 Beralih ke: ${currentUser === 'default' ? 'Pengguna Default' : currentUser}`, 'success');
+
+        try {
+          // Bersihkan input dari karakter yang tidak diizinkan
+          const cleanExpression = expression.replace(/[^0-9+\-*/().\s]/g, "");
+
+          if (cleanExpression !== expression) {
+            resultElement.textContent = "❌";
+            resultElement.style.background = "#f44336";
+            return;
+          }
+
+          // Evaluasi ekspresi matematika dengan aman
+          const result = Function(
+            '"use strict"; return (' + cleanExpression + ")"
+          )();
+
+          if (isNaN(result) || !isFinite(result)) {
+            resultElement.textContent = "❌";
+            resultElement.style.background = "#f44336";
+          } else {
+            resultElement.textContent =
+              Math.round(result).toLocaleString("id-ID");
+            resultElement.style.background = "#4CAF50";
+          }
+        } catch (error) {
+          resultElement.textContent = "❌";
+          resultElement.style.background = "#f44336";
         }
-        
-        function getStorageKey() {
-            return `catatanKeuangan_${currentUser}`;
+      }
+
+      function getCalculatedValue(inputId) {
+        const input = document.getElementById(inputId);
+        const expression = input.value.trim();
+
+        if (!expression) return 0;
+
+        try {
+          const cleanExpression = expression.replace(/[^0-9+\-*/().\s]/g, "");
+          const result = Function(
+            '"use strict"; return (' + cleanExpression + ")"
+          )();
+          return isNaN(result) || !isFinite(result) ? 0 : Math.round(result);
+        } catch (error) {
+          return 0;
         }
-        
-        function bacaData() {
-            const data = localStorage.getItem(getStorageKey());
-            return data ? JSON.parse(data) : {};
+      }
+
+      function showAlert(message, type = "success") {
+        const alertArea = document.getElementById("alertArea");
+        alertArea.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        setTimeout(() => {
+          alertArea.innerHTML = "";
+        }, 3000);
+      }
+
+      function showMainMenu() {
+        document.getElementById("mainMenu").style.display = "block";
+        document.getElementById("pemasukanForm").style.display = "none";
+        document.getElementById("pengeluaranForm").style.display = "none";
+        document.getElementById("ringkasanArea").innerHTML = "";
+      }
+
+      function showPemasukanForm() {
+        document.getElementById("mainMenu").style.display = "none";
+        document.getElementById("pemasukanForm").style.display = "block";
+        document.getElementById("jumlahPemasukan").focus();
+      }
+
+      function showPengeluaranForm() {
+        document.getElementById("mainMenu").style.display = "none";
+        document.getElementById("pengeluaranForm").style.display = "block";
+      }
+
+      function catatPemasukan() {
+        const jumlah = getCalculatedValue("jumlahPemasukan");
+
+        if (jumlah <= 0) {
+          showAlert("❌ Jumlah tidak valid!", "error");
+          return;
         }
-        
-        function simpanData(data) {
-            localStorage.setItem(getStorageKey(), JSON.stringify(data));
+
+        const data = bacaData();
+
+        if (!data[today]) {
+          data[today] = {
+            pemasukan: 0,
+            pengeluaran: {
+              makanan: 0,
+              minuman: 0,
+              bensin: 0,
+              lainnya: 0,
+            },
+          };
         }
-        
-        function calculateExpression(input) {
-            const expression = input.value.trim();
-            const resultElement = document.getElementById(input.id + 'Result');
-            
-            if (!expression) {
-                resultElement.textContent = '';
-                return;
-            }
-            
-            try {
-                // Bersihkan input dari karakter yang tidak diizinkan
-                const cleanExpression = expression.replace(/[^0-9+\-*/().\s]/g, '');
-                
-                if (cleanExpression !== expression) {
-                    resultElement.textContent = '❌';
-                    resultElement.style.background = '#f44336';
-                    return;
-                }
-                
-                // Evaluasi ekspresi matematika dengan aman
-                const result = Function('"use strict"; return (' + cleanExpression + ')')();
-                
-                if (isNaN(result) || !isFinite(result)) {
-                    resultElement.textContent = '❌';
-                    resultElement.style.background = '#f44336';
-                } else {
-                    resultElement.textContent = Math.round(result).toLocaleString('id-ID');
-                    resultElement.style.background = '#4CAF50';
-                }
-            } catch (error) {
-                resultElement.textContent = '❌';
-                resultElement.style.background = '#f44336';
-            }
+
+        data[today].pemasukan += jumlah;
+        simpanData(data);
+
+        showAlert(
+          `✅ Pemasukan Rp${jumlah.toLocaleString("id-ID")} berhasil dicatat!`
+        );
+        document.getElementById("jumlahPemasukan").value = "";
+        document.getElementById("jumlahPemasukanResult").textContent = "";
+        showMainMenu();
+      }
+
+      function catatPengeluaran() {
+        const makanan = getCalculatedValue("makanan");
+        const minuman = getCalculatedValue("minuman");
+        const bensin = getCalculatedValue("bensin");
+        const lainnya = getCalculatedValue("lainnya");
+
+        const total = makanan + minuman + bensin + lainnya;
+
+        if (total <= 0) {
+          showAlert("❌ Masukkan minimal satu pengeluaran!", "error");
+          return;
         }
-        
-        function getCalculatedValue(inputId) {
-            const input = document.getElementById(inputId);
-            const expression = input.value.trim();
-            
-            if (!expression) return 0;
-            
-            try {
-                const cleanExpression = expression.replace(/[^0-9+\-*/().\s]/g, '');
-                const result = Function('"use strict"; return (' + cleanExpression + ')')();
-                return isNaN(result) || !isFinite(result) ? 0 : Math.round(result);
-            } catch (error) {
-                return 0;
-            }
+
+        const data = bacaData();
+
+        if (!data[today]) {
+          data[today] = {
+            pemasukan: 0,
+            pengeluaran: {
+              makanan: 0,
+              minuman: 0,
+              bensin: 0,
+              lainnya: 0,
+            },
+          };
         }
-        
-        function showAlert(message, type = 'success') {
-            const alertArea = document.getElementById('alertArea');
-            alertArea.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
-            setTimeout(() => {
-                alertArea.innerHTML = '';
-            }, 3000);
-        }
-        
-        function showMainMenu() {
-            document.getElementById('mainMenu').style.display = 'block';
-            document.getElementById('pemasukanForm').style.display = 'none';
-            document.getElementById('pengeluaranForm').style.display = 'none';
-            document.getElementById('ringkasanArea').innerHTML = '';
-        }
-        
-        function showPemasukanForm() {
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('pemasukanForm').style.display = 'block';
-            document.getElementById('jumlahPemasukan').focus();
-        }
-        
-        function showPengeluaranForm() {
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('pengeluaranForm').style.display = 'block';
-        }
-        
-        function catatPemasukan() {
-            const jumlah = getCalculatedValue('jumlahPemasukan');
-            
-            if (jumlah <= 0) {
-                showAlert('❌ Jumlah tidak valid!', 'error');
-                return;
-            }
-            
-            const data = bacaData();
-            
-            if (!data[today]) {
-                data[today] = {
-                    pemasukan: 0,
-                    pengeluaran: {
-                        makanan: 0,
-                        minuman: 0,
-                        bensin: 0,
-                        lainnya: 0
-                    }
-                };
-            }
-            
-            data[today].pemasukan += jumlah;
-            simpanData(data);
-            
-            showAlert(`✅ Pemasukan Rp${jumlah.toLocaleString('id-ID')} berhasil dicatat!`);
-            document.getElementById('jumlahPemasukan').value = '';
-            document.getElementById('jumlahPemasukanResult').textContent = '';
-            showMainMenu();
-        }
-        
-        function catatPengeluaran() {
-            const makanan = getCalculatedValue('makanan');
-            const minuman = getCalculatedValue('minuman');
-            const bensin = getCalculatedValue('bensin');
-            const lainnya = getCalculatedValue('lainnya');
-            
-            const total = makanan + minuman + bensin + lainnya;
-            
-            if (total <= 0) {
-                showAlert('❌ Masukkan minimal satu pengeluaran!', 'error');
-                return;
-            }
-            
-            const data = bacaData();
-            
-            if (!data[today]) {
-                data[today] = {
-                    pemasukan: 0,
-                    pengeluaran: {
-                        makanan: 0,
-                        minuman: 0,
-                        bensin: 0,
-                        lainnya: 0
-                    }
-                };
-            }
-            
-            data[today].pengeluaran.makanan += makanan;
-            data[today].pengeluaran.minuman += minuman;
-            data[today].pengeluaran.bensin += bensin;
-            data[today].pengeluaran.lainnya += lainnya;
-            
-            simpanData(data);
-            
-            showAlert(`✅ Pengeluaran Rp${total.toLocaleString('id-ID')} berhasil dicatat!`);
-            
-            // Reset form
-            ['makanan', 'minuman', 'bensin', 'lainnya'].forEach(id => {
-                document.getElementById(id).value = '';
-                document.getElementById(id + 'Result').textContent = '';
-            });
-            
-            showMainMenu();
-        }
-        
-        function showRingkasan() {
-            const data = bacaData();
-            const ringkasanArea = document.getElementById('ringkasanArea');
-            
-            if (!data[today]) {
-                ringkasanArea.innerHTML = `
+
+        data[today].pengeluaran.makanan += makanan;
+        data[today].pengeluaran.minuman += minuman;
+        data[today].pengeluaran.bensin += bensin;
+        data[today].pengeluaran.lainnya += lainnya;
+
+        simpanData(data);
+
+        showAlert(
+          `✅ Pengeluaran Rp${total.toLocaleString("id-ID")} berhasil dicatat!`
+        );
+
+        // Reset form
+        ["makanan", "minuman", "bensin", "lainnya"].forEach((id) => {
+          document.getElementById(id).value = "";
+          document.getElementById(id + "Result").textContent = "";
+        });
+
+        showMainMenu();
+      }
+
+      function showRingkasan() {
+        const data = bacaData();
+        const ringkasanArea = document.getElementById("ringkasanArea");
+
+        if (!data[today]) {
+          ringkasanArea.innerHTML = `
                     <div class="alert alert-warning">
                         📅 Belum ada data untuk hari ini (${today})
                     </div>
                 `;
-                return;
-            }
-            
-            const dataHari = data[today];
-            const totalPengeluaran = Object.values(dataHari.pengeluaran).reduce((a, b) => a + b, 0);
-            const saldo = dataHari.pemasukan - totalPengeluaran;
-            
-            ringkasanArea.innerHTML = `
+          return;
+        }
+
+        const dataHari = data[today];
+        const totalPengeluaran = Object.values(dataHari.pengeluaran).reduce(
+          (a, b) => a + b,
+          0
+        );
+        const saldo = dataHari.pemasukan - totalPengeluaran;
+
+        ringkasanArea.innerHTML = `
                 <div class="ringkasan">
                     <h3>📊 Ringkasan Hari Ini</h3>
                     <div class="ringkasan-item">
                         <span>🟢 Pemasukan:</span>
-                        <span class="positive">Rp${dataHari.pemasukan.toLocaleString('id-ID')}</span>
+                        <span class="positive">Rp${dataHari.pemasukan.toLocaleString(
+                          "id-ID"
+                        )}</span>
                     </div>
                     <div class="ringkasan-item">
                         <span>🍽️ Makanan:</span>
-                        <span class="negative">Rp${dataHari.pengeluaran.makanan.toLocaleString('id-ID')}</span>
+                        <span class="negative">Rp${dataHari.pengeluaran.makanan.toLocaleString(
+                          "id-ID"
+                        )}</span>
                     </div>
                     <div class="ringkasan-item">
                         <span>🥤 Minuman:</span>
-                        <span class="negative">Rp${dataHari.pengeluaran.minuman.toLocaleString('id-ID')}</span>
+                        <span class="negative">Rp${dataHari.pengeluaran.minuman.toLocaleString(
+                          "id-ID"
+                        )}</span>
                     </div>
                     <div class="ringkasan-item">
                         <span>⛽ Bensin:</span>
-                        <span class="negative">Rp${dataHari.pengeluaran.bensin.toLocaleString('id-ID')}</span>
+                        <span class="negative">Rp${dataHari.pengeluaran.bensin.toLocaleString(
+                          "id-ID"
+                        )}</span>
                     </div>
                     <div class="ringkasan-item">
                         <span>📦 Lainnya:</span>
-                        <span class="negative">Rp${dataHari.pengeluaran.lainnya.toLocaleString('id-ID')}</span>
+                        <span class="negative">Rp${dataHari.pengeluaran.lainnya.toLocaleString(
+                          "id-ID"
+                        )}</span>
                     </div>
                     <div class="ringkasan-item">
                         <span>💰 Saldo Hari Ini:</span>
-                        <span class="${saldo >= 0 ? 'positive' : 'negative'}">Rp${saldo.toLocaleString('id-ID')}</span>
+                        <span class="${
+                          saldo >= 0 ? "positive" : "negative"
+                        }">Rp${saldo.toLocaleString("id-ID")}</span>
                     </div>
                 </div>
-                ${saldo < 0 ? '<div class="alert alert-warning">⚠️ Pengeluaran melebihi pemasukan!</div>' : ''}
+                ${
+                  saldo < 0
+                    ? '<div class="alert alert-warning">⚠️ Pengeluaran melebihi pemasukan!</div>'
+                    : ""
+                }
             `;
-        }
-        
-        function showTotalKeseluruhan() {
-            const data = bacaData();
-            const ringkasanArea = document.getElementById('ringkasanArea');
-            
-            let totalPemasukan = 0;
-            let totalPengeluaran = 0;
-            let jumlahHari = 0;
-            
-            Object.values(data).forEach(hari => {
-                totalPemasukan += hari.pemasukan;
-                totalPengeluaran += Object.values(hari.pengeluaran).reduce((a, b) => a + b, 0);
-                jumlahHari++;
-            });
-            
-            const saldoTotal = totalPemasukan - totalPengeluaran;
-            
-            ringkasanArea.innerHTML = `
+      }
+
+      function showTotalKeseluruhan() {
+        const data = bacaData();
+        const ringkasanArea = document.getElementById("ringkasanArea");
+
+        let totalPemasukan = 0;
+        let totalPengeluaran = 0;
+        let jumlahHari = 0;
+
+        Object.values(data).forEach((hari) => {
+          totalPemasukan += hari.pemasukan;
+          totalPengeluaran += Object.values(hari.pengeluaran).reduce(
+            (a, b) => a + b,
+            0
+          );
+          jumlahHari++;
+        });
+
+        const saldoTotal = totalPemasukan - totalPengeluaran;
+
+        ringkasanArea.innerHTML = `
                 <div class="ringkasan">
                     <h3>💼 Total Keseluruhan</h3>
                     <div class="ringkasan-item">
                         <span>👤 Pengguna:</span>
-                        <span>${currentUser === 'default' ? 'Default' : currentUser}</span>
+                        <span>${
+                          currentUser === "default" ? "Default" : currentUser
+                        }</span>
                     </div>
                     <div class="ringkasan-item">
                         <span>🗓️ Jumlah Hari:</span>
@@ -678,26 +911,36 @@
                     </div>
                     <div class="ringkasan-item">
                         <span>🟢 Total Pemasukan:</span>
-                        <span class="positive">Rp${totalPemasukan.toLocaleString('id-ID')}</span>
+                        <span class="positive">Rp${totalPemasukan.toLocaleString(
+                          "id-ID"
+                        )}</span>
                     </div>
                     <div class="ringkasan-item">
                         <span>🔴 Total Pengeluaran:</span>
-                        <span class="negative">Rp${totalPengeluaran.toLocaleString('id-ID')}</span>
+                        <span class="negative">Rp${totalPengeluaran.toLocaleString(
+                          "id-ID"
+                        )}</span>
                     </div>
                     <div class="ringkasan-item">
                         <span>💰 Saldo Total:</span>
-                        <span class="${saldoTotal >= 0 ? 'positive' : 'negative'}">Rp${saldoTotal.toLocaleString('id-ID')}</span>
+                        <span class="${
+                          saldoTotal >= 0 ? "positive" : "negative"
+                        }">Rp${saldoTotal.toLocaleString("id-ID")}</span>
                     </div>
                 </div>
-                ${saldoTotal < 0 ? '<div class="alert alert-warning">⚠️ Total pengeluaran melebihi pemasukan!</div>' : ''}
+                ${
+                  saldoTotal < 0
+                    ? '<div class="alert alert-warning">⚠️ Total pengeluaran melebihi pemasukan!</div>'
+                    : ""
+                }
             `;
-        }
-        
-        function showExportOptions() {
-            const data = bacaData();
-            const ringkasanArea = document.getElementById('ringkasanArea');
-            
-            ringkasanArea.innerHTML = `
+      }
+
+      function showExportOptions() {
+        const data = bacaData();
+        const ringkasanArea = document.getElementById("ringkasanArea");
+
+        ringkasanArea.innerHTML = `
                 <div class="export-section">
                     <h3>📤 Export Data</h3>
                     <p>Pilih format export:</p>
@@ -707,68 +950,108 @@
                     <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
                 </div>
             `;
-        }
-        
-        function exportToJSON() {
-            const data = bacaData();
-            const dataStr = JSON.stringify(data, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = `catatan_keuangan_${currentUser}_${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
-            
-            showAlert('✅ Data berhasil diexport ke JSON!');
-        }
-        
-        function exportToCSV() {
-            const data = bacaData();
-            let csv = 'Tanggal,Pemasukan,Makanan,Minuman,Bensin,Lainnya,Total Pengeluaran,Saldo\n';
-            
-            Object.entries(data).forEach(([tanggal, hari]) => {
-                const totalPengeluaran = Object.values(hari.pengeluaran).reduce((a, b) => a + b, 0);
-                const saldo = hari.pemasukan - totalPengeluaran;
-                
-                csv += `${tanggal},${hari.pemasukan},${hari.pengeluaran.makanan},${hari.pengeluaran.minuman},${hari.pengeluaran.bensin},${hari.pengeluaran.lainnya},${totalPengeluaran},${saldo}\n`;
-            });
-            
-            const dataBlob = new Blob([csv], {type: 'text/csv'});
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = `catatan_keuangan_${currentUser}_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-            
-            showAlert('✅ Data berhasil diexport ke CSV!');
-        }
-        
-        function importData() {
-            document.getElementById('importFile').click();
-        }
-        
-        function handleImport(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    simpanData(importedData);
-                    showAlert('✅ Data berhasil diimport!');
-                    showMainMenu();
-                } catch (error) {
-                    showAlert('❌ File tidak valid!', 'error');
-                }
-            };
-            reader.readAsText(file);
-        }
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeUsers();
-            showMainMenu();
+      }
+
+      function exportToJSON() {
+        const data = bacaData();
+        const dataStr = JSON.stringify(data, null, 2);
+        const dataBlob = new Blob([dataStr], { type: "application/json" });
+
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = `catatan_keuangan_${currentUser}_${
+          new Date().toISOString().split("T")[0]
+        }.json`;
+        link.click();
+
+        showAlert("✅ Data berhasil diexport ke JSON!");
+      }
+
+      function exportToCSV() {
+        const data = bacaData();
+        let csv =
+          "Tanggal,Pemasukan,Makanan,Minuman,Bensin,Lainnya,Total Pengeluaran,Saldo\n";
+
+        Object.entries(data).forEach(([tanggal, hari]) => {
+          const totalPengeluaran = Object.values(hari.pengeluaran).reduce(
+            (a, b) => a + b,
+            0
+          );
+          const saldo = hari.pemasukan - totalPengeluaran;
+
+          csv += `${tanggal},${hari.pemasukan},${hari.pengeluaran.makanan},${hari.pengeluaran.minuman},${hari.pengeluaran.bensin},${hari.pengeluaran.lainnya},${totalPengeluaran},${saldo}\n`;
         });
+
+        const dataBlob = new Blob([csv], { type: "text/csv" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(dataBlob);
+        link.download = `catatan_keuangan_${currentUser}_${
+          new Date().toISOString().split("T")[0]
+        }.csv`;
+        link.click();
+
+        showAlert("✅ Data berhasil diexport ke CSV!");
+      }
+
+      function importData() {
+        document.getElementById("importFile").click();
+      }
+
+      function handleImport(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const importedData = JSON.parse(e.target.result);
+            simpanData(importedData);
+            showAlert("✅ Data berhasil diimport!");
+            showMainMenu();
+          } catch (error) {
+            showAlert("❌ File tidak valid!", "error");
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      // Add new functions for theme and arithmetic buttons
+      function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute("data-theme");
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+        html.setAttribute("data-theme", newTheme);
+        localStorage.setItem("theme", newTheme);
+
+        const themeToggle = document.getElementById("themeToggle");
+        themeToggle.textContent = newTheme === "light" ? "🌙" : "☀️";
+      }
+
+      function appendToInput(inputId, operator) {
+        const input = document.getElementById(inputId);
+        const currentValue = input.value;
+
+        // Only append operator if there's a value and it doesn't end with an operator
+        if (
+          currentValue &&
+          !currentValue.endsWith("+") &&
+          !currentValue.endsWith("*")
+        ) {
+          input.value = currentValue + operator;
+          calculateExpression(input);
+        }
+      }
+
+      // Initialize theme
+      document.addEventListener("DOMContentLoaded", function () {
+        const savedTheme = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", savedTheme);
+        const themeToggle = document.getElementById("themeToggle");
+        themeToggle.textContent = savedTheme === "light" ? "🌙" : "☀️";
+
+        initializeUsers();
+        showMainMenu();
+      });
     </script>
-</body>
+  </body>
 </html>
